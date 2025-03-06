@@ -5,11 +5,12 @@ body {
    color: #001f3f;
    margin: 0;
    padding: 20px;
-   font-size: 13px;
+   font-size: 16px;
  }
  
  .container {
-   max-width: 1000px;
+  width: 95%; /* Use a percentage */
+  max-width: 1000px;
    margin: auto;
    background-color: #ffffff;
    padding: 20px;
@@ -41,6 +42,9 @@ body {
    background-color: #ffffff;
    color: #001f3f;
    transition: 0.3s;
+    width: 100%;
+    box-sizing: border-box; /* Include padding and border in the width */
+  
  }
  
  input:focus,
@@ -66,11 +70,38 @@ body {
    color: #ffffff;
  }
  
- .controls {
-   display: flex;
-   justify-content: space-between;
-   margin: 20px 0;
- }
+/* Mobile-first styles (default) */
+.controls {
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  gap: 10px; 
+}
+
+.controls label, 
+.controls select, 
+.controls input,
+.controls button {
+  width: 100%; /* Full width inputs */
+  box-sizing: border-box;
+}
+
+/* Tablet and larger screens */
+@media (min-width: 768px) {
+  .controls {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two-column grid */
+    gap: 15px;
+  }
+
+  .controls > * { /* Apply to all direct children of .controls */
+    display: flex;
+    align-items: center; /* Align label and input vertically */
+  }
+
+  .controls label {
+    margin-right: 10px; /* Space between label and input */
+  }
+}
  
  table {
    width: 100%;
@@ -257,3 +288,40 @@ body {
  .beige {
   color: #dfdfda;
  }
+
+ @media (max-width: 768px) {
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+  thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+  tr {
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+  }
+  td {
+    border: none;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    padding-left: 50%;
+  }
+  td:before {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    content: attr(data-label);
+    font-weight: bold;
+  }
+  td:nth-of-type(1):before { content: "Task"; }
+  td:nth-of-type(2):before { content: "Status"; }
+  td:nth-of-type(3):before { content: "Room"; }
+  td:nth-of-type(4):before { content: "Due Date"; }
+  td:nth-of-type(5):before { content: "Description"; }
+  td:nth-of-type(6):before { content: "Actions"; }
+}
