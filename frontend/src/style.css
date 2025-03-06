@@ -1,313 +1,144 @@
 /* src/style.css */
 body {
-   background-color: #ffffff;
-   font-family: "Fira Code", monospace;
-   color: #001f3f;
-   margin: 0;
-   padding: 20px;
-   font-size: 16px;
- }
- 
- .container {
-  width: 95%; /* Use a percentage */
-  max-width: 1000px;
-   margin: auto;
-   background-color: #ffffff;
-   padding: 20px;
-   border-radius: 8px;
-   border: 2px solid #001f3f;
- }
- 
- h1 {
-   text-align: center;
-   color: #001f3f;
-   text-transform: uppercase;
-   font-size: 24px;
-   font-weight: bold;
- }
- 
- form {
-   display: flex;
-   flex-direction: column;
-   gap: 10px;
- }
- 
- input,
- select,
- textarea,
- button {
-   padding: 10px;
-   border-radius: 5px;
-   border: 1px solid #001f3f;
-   background-color: #ffffff;
-   color: #001f3f;
-   transition: 0.3s;
-    width: 100%;
-    box-sizing: border-box; /* Include padding and border in the width */
-  
- }
- 
- input:focus,
- select:focus,
- textarea:focus {
-   border-color: #001f3f;
-   box-shadow: 0 0 5px rgba(0, 31, 63, 0.5);
- }
- 
- button {
-   background-color: #ffffff;
-   color: #001f3f;
-   font-weight: bold;
-   cursor: pointer;
-   padding: 8px 14px;
-   border: 2px solid #001f3f;
-   border-radius: 4px;
-   transition: background 0.3s ease-in-out, transform 0.2s;
- }
- 
- button:hover {
-   background-color: #001f3f;
-   color: #ffffff;
- }
- 
-/* Mobile-first styles (default) */
-.controls {
-  display: flex;
-  flex-direction: column; /* Stack elements vertically */
-  gap: 10px; 
+  background-color: #ffffff;
+  font-family: "Fira Code", monospace;
+  color: #001f3f;
+  margin: 0;
+  padding: 20px;
+  font-size: 16px;
 }
 
-.controls label, 
-.controls select, 
-.controls input,
-.controls button {
-  width: 100%; /* Full width inputs */
+.container {
+  width: 95%;
+  max-width: 1000px;
+  margin: auto;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  border: 2px solid #001f3f;
+}
+
+h1 {
+  text-align: center;
+  color: #001f3f;
+  text-transform: uppercase;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  form {
+    width: 100%;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    max-width: 100%;
+    font-size: 16px;
+  }
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+input,
+select,
+textarea,
+button {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #001f3f;
+  background-color: #ffffff;
+  color: #001f3f;
+  transition: 0.3s;
+  width: 100%;
   box-sizing: border-box;
 }
 
-/* Tablet and larger screens */
-@media (min-width: 768px) {
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #001f3f;
+  box-shadow: 0 0 5px rgba(0, 31, 63, 0.5);
+}
+
+button {
+  background-color: #ffffff;
+  min-width: 44px;
+  padding: 10px 14px;
+  color: #001f3f;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 8px 14px;
+  border: 2px solid #001f3f;
+  border-radius: 4px;
+  transition: background 0.3s ease-in-out, transform 0.2s;
+}
+
+button:hover {
+  background-color: #001f3f;
+  color: #ffffff;
+}
+
+/* Mobile-first styles (default) */
+.controls {
+  display: flex;
+  flex-direction: column;
+  /* Stack elements vertically */
+  gap: 10px;
+}
+
+.controls label,
+.controls select,
+.controls input,
+.controls button {
+  width: 100%;
+  /* Full width inputs */
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
   .controls {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Two-column grid */
-    gap: 15px;
-  }
-
-  .controls > * { /* Apply to all direct children of .controls */
     display: flex;
-    align-items: center; /* Align label and input vertically */
-  }
-
-  .controls label {
-    margin-right: 10px; /* Space between label and input */
+    flex-direction: column;
+    /* Force vertical stacking */
+    gap: 10px;
   }
 }
- 
- table {
-   width: 100%;
-   border-collapse: collapse;
-   margin-top: 10px;
-   border: 2px solid #001f3f;
-   table-layout: fixed;
- }
- 
- thead {
-   background-color: #001f3f;
-   color: #ffffff;
- }
- 
- th {
-   font-weight: bold;
- }
- 
- tbody tr:nth-child(even) {
-   background-color: #f8f8f8;
- }
- 
- tbody tr:hover {
-   background-color: #e0e0e0;
- }
- 
- .action-buttons {
-   display: flex;
-   flex-direction: row;
-   gap: 5px;
- }
- 
- .edit-btn,
- .delete-btn {
-   font-size: 14px;
-   padding: 6px 12px;
-   border-radius: 4px;
-   border: 2px solid #001f3f;
- }
- 
- .edit-btn {
-   background-color: #ffffff;
-   color: #001f3f;
- }
- 
- .edit-btn:hover {
-   background-color: #001f3f;
-   color: #ffffff;
- }
- 
- .delete-btn {
-   background-color: #ffffff;
-   color: #001f3f;
- }
- 
- .delete-btn:hover {
-   background-color: #001f3f;
-   color: #ffffff;
- }
- #toggle-form {
-  margin-bottom: 10px;
-  padding: 8px 16px;
-  cursor: pointer;
-  border: 2px solid #EF4931; /* Outlined with #EF4931 */
-  color: #001f3f;          /* Initial font color */
-  background-color: white; /* Initial background color */
-  transition: background-color 0.3s ease, color 0.3s ease; /* Add transition for smooth effect */
-}
 
-#toggle-form:hover {
-  background-color: #EF4931; /* Background color on hover */
-  color: white;              /* Font color on hover */
-}
- 
- #form-container {
-   margin-bottom: 20px;
- }
- 
- /* === Popup Overlay === */
- .popup-overlay {
-   position: fixed;
-   top: 0;
-   left: 0;
-   width: 100%;
-   height: 100%;
-   background: rgba(0, 0, 0, 0.6);
-   display: flex;
-   align-items: center;
-   justify-content: center;
-   z-index: 1000;
- }
- 
- /* === Popup Box === */
- .popup {
-   position: fixed;
-   top: 50%;
-   left: 50%;
-   transform: translate(-50%, -50%);
-   background: rgba(255, 255, 255, 0.95);
-   color: #001f3f;
-   padding: 20px;
-   border-radius: 8px;
-   box-shadow: 0 5px 15px rgba(0, 31, 63, 0.3);
-   z-index: 1000;
-   max-width: 300px;
-   text-align: center;
- }
- 
- .popup-content {
-   font-size: 16px;
- }
-
- 
-
-
-/* Edit Button */
-.edit-btn {
-  background-color: white;
-  border: 2px solid #73a6a2; /* Outline color */
-  color: #001f3f;          /* Initial font color */
-  padding: 6px 12px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.edit-btn:hover {
-  background-color: #73a6a2; /* Background color on hover */
-  color: white;              /* Font color on hover */
-}
-
-/* Delete Button */
-.delete-btn {
-  background-color: white;
-  border: 2px solid #EF4931; /* Outline color */
-  color: #001f3f;          /* Initial font color */
-  padding: 6px 12px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.delete-btn:hover {
-  background-color: #EF4931; /* Background color on hover */
-  color: white;              /* Font color on hover */
-}
- /* === Button Styles === */
- .info-btn {
-  background-color: white;
-  border: 2px solid #ffd300; /* Outline color */
-  color: #001f3f;          /* Initial font color */
-  padding: 6px 12px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.info-btn:hover {
-  background-color: #ffd300; /* Background color on hover */
-  color: #001f3f;          /* Font color on hover */
-}
-
-#button-clear {
-  background-color: white;
-  border: 2px solid #dfdfda; /* Outline color */
-  color: #001f3f;          /* Initial font color */
-  padding: 6px 12px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-#button-clear:hover {
-  background-color: #dfdfda; /* Background color on hover */
-  color: #001f3f;          /* Font color on hover */
-}
- .red {
-   color: #EF4931;
- }
- .yellow {
-   color: #ffd300;
- }
- 
- .green {
-   color: #73a6a2;
- }
-
- .beige {
-  color: #dfdfda;
- }
-
- @media (max-width: 768px) {
-  table, thead, tbody, th, td, tr {
+@media (max-width: 768px) {
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
     display: block;
   }
+
   thead tr {
     position: absolute;
     top: -9999px;
     left: -9999px;
   }
+
   tr {
     border: 1px solid #ccc;
     margin-bottom: 10px;
   }
+
   td {
     border: none;
     border-bottom: 1px solid #eee;
     position: relative;
     padding-left: 50%;
   }
+
   td:before {
     position: absolute;
     top: 6px;
@@ -324,4 +155,214 @@ body {
   td:nth-of-type(4):before { content: "Due Date"; }
   td:nth-of-type(5):before { content: "Description"; }
   td:nth-of-type(6):before { content: "Actions"; }
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  border: 2px solid #001f3f;
+  table-layout: fixed;
+}
+
+thead {
+  background-color: #001f3f;
+  color: #ffffff;
+}
+
+th {
+  font-weight: bold;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f8f8f8;
+}
+
+tbody tr:hover {
+  background-color: #e0e0e0;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.edit-btn,
+.delete-btn {
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 2px solid #001f3f;
+}
+
+.edit-btn {
+  background-color: #ffffff;
+  color: #001f3f;
+}
+
+.edit-btn:hover {
+  background-color: #001f3f;
+  color: #ffffff;
+}
+
+.delete-btn {
+  background-color: #ffffff;
+  color: #001f3f;
+}
+
+.delete-btn:hover {
+  background-color: #001f3f;
+  color: #ffffff;
+}
+
+#toggle-form {
+  margin-bottom: 10px;
+  padding: 8px 16px;
+  cursor: pointer;
+  border: 2px solid #EF4931;
+  /* Outlined with #EF4931 */
+  color: #001f3f;
+  /* Initial font color */
+  background-color: white;
+  /* Initial background color */
+  transition: background-color 0.3s ease, color 0.3s ease;
+  /* Add transition for smooth effect */
+}
+
+#toggle-form:hover {
+  background-color: #EF4931;
+  /* Background color on hover */
+  color: white;
+  /* Font color on hover */
+}
+
+#form-container {
+  margin-bottom: 20px;
+}
+
+/* === Popup Overlay === */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* === Popup Box === */
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.95);
+  color: #001f3f;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 31, 63, 0.3);
+  z-index: 1000;
+  max-width: 300px;
+  text-align: center;
+}
+
+.popup-content {
+  font-size: 16px;
+}
+
+
+/* Edit Button */
+.edit-btn {
+  background-color: white;
+  border: 2px solid #73a6a2;
+  /* Outline color */
+  color: #001f3f;
+  /* Initial font color */
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.edit-btn:hover {
+  background-color: #73a6a2;
+  /* Background color on hover */
+  color: white;
+  /* Font color on hover */
+}
+
+/* Delete Button */
+.delete-btn {
+  background-color: white;
+  border: 2px solid #EF4931;
+  /* Outline color */
+  color: #001f3f;
+  /* Initial font color */
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.delete-btn:hover {
+  background-color: #EF4931;
+  /* Background color on hover */
+  color: white;
+  /* Font color on hover */
+}
+
+/* === Button Styles === */
+.info-btn {
+  background-color: white;
+  border: 2px solid #ffd300;
+  /* Outline color */
+  color: #001f3f;
+  /* Initial font color */
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.info-btn:hover {
+  background-color: #ffd300;
+  /* Background color on hover */
+  color: #001f3f;
+  /* Font color on hover */
+}
+
+#button-clear {
+  background-color: white;
+  border: 2px solid #dfdfda;
+  /* Outline color */
+  color: #001f3f;
+  /* Initial font color */
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#button-clear:hover {
+  background-color: #dfdfda;
+  /* Background color on hover */
+  color: #001f3f;
+  /* Font color on hover */
+}
+
+.red {
+  color: #EF4931;
+}
+
+.yellow {
+  color: #ffd300;
+}
+
+.green {
+  color: #73a6a2;
+}
+
+.beige {
+  color: #dfdfda;
 }
