@@ -4,66 +4,70 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DixonList</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/src/style.css">
+  <title>WhiteDixon</title>
+  <link rel="stylesheet" href="./src/style.css">
 </head>
 
-<body class="bg-gray-900 text-gray-100 font-sans">
-  <div class="max-w-md mx-auto p-4">
-    <h1
-      class="text-3xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-300 mb-6 text-center">
-      DixonList</h1>
+<body>
+  <div class="container">
+    <h1 class="blue">WhiteDixon</h1>
+    <button id="toggle-form">Hide Form</button>
+    <div id="form-container">
+      <form id="task-form">
+        <label for="task-name">Task Name:</label>
+        <input type="text" id="task-name" required>
 
-    <form id="task-form" class="bg-gray-800 p-6 rounded-lg shadow-md mb-6">
-      <label for="task-name" class="block text-sm font-medium mb-1">Task Name</label>
-      <input type="text" id="task-name" placeholder="Task Name" required
-        class="w-full bg-gray-700 text-gray-100 border-none rounded-md p-2 mb-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
-
-      <label for="task-status" class="block text-sm font-medium mb-1">Status</label>
-      <select id="task-status"
-        class="w-full bg-gray-700 text-gray-100 border-none rounded-md p-2 mb-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+        <label for="task-status">Status:</label>
+        <select id="task-status">
+          <option value="Not Started">Not Started</option>
+          <option value="In-Progress">In-Progress</option>
+          <option value="Completed">Completed</option>
+          <option value="On-Hold">On-Hold</option>
+        </select>
+        <label for="task-room">Room:</label>
+        <input type="text" id="task-room">
+        <label for="task-due-date">Due Date:</label>
+        <input type="date" id="task-due-date">
+        <label for="task-desc">Description:</label>
+        <textarea id="task-desc"></textarea>
+        <button type="submit">Add Task</button>
+      </form>
+    </div>
+    <div class="controls">
+      <label for="filter-status">Filter by Status</label>
+      <select id="filter-status">
+        <option value="">All</option>
         <option value="Not Started">Not Started</option>
         <option value="In-Progress">In-Progress</option>
         <option value="Completed">Completed</option>
         <option value="On-Hold">On-Hold</option>
       </select>
+      <label for="sort-by">Sort By</label>
+      <select id="sort-by">
+        <option value="due_date">Due Date</option>
 
-      <label for="task-room" class="block text-sm font-medium mb-1">Room</label>
-      <input type="text" id="task-room" placeholder="Room"
-        class="w-full bg-gray-700 text-gray-100 border-none rounded-md p-2 mb-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+        <option value="status">Status</option>
 
-      <label for="task-due-date" class="block text-sm font-medium mb-1">Due Date</label>
-      <input type="date" id="task-due-date"
-        class="w-full bg-gray-700 text-gray-100 border-none rounded-md p-2 mb-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
-
-      <label for="task-desc" class="block text-sm font-medium mb-1">Description</label>
-      <textarea id="task-desc" placeholder="Description"
-        class="w-full bg-gray-700 text-gray-100 border-none rounded-md p-2 mb-4 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
-
-      <button type="submit"
-        class="w-full bg-gradient-to-r from-blue-400 to-blue-300 text-gray-100 rounded-md p-2 shadow-sm hover:shadow-md transition-transform duration-300 transform hover:translate-y-[-2px]">Add
-        Task</button>
-    </form>
-
-    <div class="flex justify-center space-x-2 mb-4">
-      <select id="filter-select"
-        class="bg-gray-700 text-gray-100 rounded-md p-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
-        <option value="">All Tasks</option>
-        <option value="Not Started">Not Started</option>
-        <option value="In-Progress">In-Progress</option>
-        <option value="Completed">Completed</option>
       </select>
-      <button id="sort-due-date"
-        class="bg-gray-800 text-gray-100 rounded-md p-2 shadow-sm hover:shadow-md transition-transform duration-300 transform hover:translate-y-[-2px]">📅
-        Sort by Due Date</button>
+      <input type="text" id="filter-text" placeholder="Type something..." />
+      <button type="button" id="button-clear"> Clear </button>
     </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Task</th>
 
-    <ul id="task-list" class="space-y-2">
-    </ul>
+          <th>Status</th>
+          <th>Room</th>
+          <th>Due Date</th>
+          <th>Description</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="task-table-body"></tbody>
+    </table>
   </div>
-
-  <script type="module" src="/src/main.js"></script>
+  <script type="module" src="./src/main.js"></script>
 </body>
 
 </html>

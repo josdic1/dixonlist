@@ -1,158 +1,201 @@
-import './style.css';
+document.addEventListener("DOMContentLoaded", () => {
+  const API_URL = import.meta.env.VITE_API_URL.replace(/\/$/, "");
+  const taskTableBody = document.querySelector("#task-table-body");
+  const taskForm = document.querySelector("#task-form");
+  const submitButton = document.querySelector('#task-form button[type="submit"]');
+  const toggleFormButton = document.querySelector("#toggle-form");
+  const formContainer = document.querySelector("#form-container");
+  const filterStatus = document.querySelector("#filter-status");
+  const sortBy = document.querySelector("#sort-by");
+  const filterText = document.querySelector("#filter-text");
+  const clearButton = document.querySelector("#button-clear");
 
-const API_URL = import.meta.env.VITE_API_URL.replace(/\/$/, "");
-const taskList = document.getElementById("task-list");
-const taskForm = document.getElementById("task-form");
-const filterSelect = document.getElementById("filter-select");
-const sortDueDateButton = document.getElementById("sort-due-date");
-const submitButton = taskForm.querySelector('button[type="submit"]');
+  let inEditMode = false;
+  let currentTaskId = null;
+  let allTasks = []; // Store all tasks for filtering/sorting
 
-let inEditMode = false;
-let currentTaskId = null;
+  formContainer.style.display = "block";
 
-// ✅ Fetch tasks from API
-async function fetchTasks(status = "") {
-  try {
-    const response = await fetch(`${API_URL}/tasks`);
-    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+  toggleFormButton.addEventListener("click", () => {
+    formContainer.style.display = formContainer.style.display === "none" ? "block" : "none";
+    toggleFormButton.textContent = formContainer.style.display === "none" ? "Show Form" : "Hide Form";
+  });
 
-    let tasks = await response.json();
-    if (status) {
-      tasks = tasks.filter(task => task.status === status);
+  async function fetchTasks() {
+    try {
+      const response = await fetch(`${API_URL}/tasks`);
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+      allTasks = await response.json();
+      console.log("Fetched tasks:", allTasks);
+      applyFilterAndSort();
+      return allTasks;
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  }
+
+  function applyFilterAndSort() {
+    let filteredTasks = [...allTasks];
+
+    // Apply status filter
+    const statusValue = filterStatus.value;
+    if (statusValue) {
+      filteredTasks = filteredTasks.filter(task => task.status === statusValue);
     }
 
-    renderTasks(tasks);
-  } catch (error) {
-    console.error("Error fetching tasks:", error);
-    // Implement user error display
+    // Apply text filter
+    const searchText = filterText.value.toLowerCase().trim();
+    if (searchText) {
+      filteredTasks = filteredTasks.filter(task =>
+        (task.task?.toLowerCase().includes(searchText) || '') ||
+
+        (task.room?.toLowerCase().includes(searchText) || '') ||
+        (task.description?.toLowerCase().includes(searchText) || '')
+      );
+    }
+
+    // Apply sorting
+    const sortValue = sortBy.value;
+    filteredTasks.sort((a, b) => {
+      switch (sortValue) {
+        case "due_date":
+          return (new Date(a.due_date || "9999-12-31") - new Date(b.due_date || "9999-12-31"));
+
+        case "status":
+          return (a.status || "").localeCompare(b.status || "");
+
+        default:
+          return 0;
+      }
+    });
+
+    renderTasks(filteredTasks);
   }
-}
 
-// ✅ Render tasks in UI
-function renderTasks(tasks) {
-  taskList.innerHTML = ""; // Clear previous list
+  function renderTasks(tasks) {
+    taskTableBody.innerHTML = "";
+    tasks.forEach(task => {
+      const row = document.createElement("tr");
+      const cleanedDescription = (task.description || "").trim();
+      let descriptionButton = "";
+      if (cleanedDescription.match(/^https?:\/\//)) {
+        descriptionButton = `<button class="info-btn" onclick="window.open('${cleanedDescription}', '_blank')">Link</button>`;
+      } else if (cleanedDescription) {
+        descriptionButton = `<button class="info-btn" onclick="showPopup('${cleanedDescription.replace(/'/g, "\\'")}')">More Info</button>`;
+      }
 
-  tasks.forEach((task) => {
-    const li = document.createElement("li");
-    li.dataset.taskId = task.id; // Use data attribute
-    li.innerHTML = `
-      <strong>${task.task}</strong>  
-      <p>📂 Status: ${task.status}</p>
-      <p>📍 Room: ${task.room || "N/A"}</p>
-      <p>📅 Due: ${task.due_date ? new Date(task.due_date).toDateString() : "No due date"}</p>
-      <p>📝 ${task.description || "No description"}</p>
-      
-      <button class="edit-btn">✏️ Edit</button>
-      <button class="delete-btn">🗑 Delete</button>
+      row.innerHTML = `
+        <td>${task.task || ""}</td>
+
+        <td>${task.status || ""}</td>
+        <td>${task.room || ""}</td>
+        <td>${task.due_date ? new Date(task.due_date).toDateString() : ""}</td>
+        <td>${descriptionButton}</td>
+        <td>
+          <div class="action-buttons">
+            <button class="edit-btn" data-id="${task.id}">Edit</button>
+            <button class="delete-btn" data-id="${task.id}">Delete</button>
+          </div>
+        </td>
+      `;
+      row.dataset.task = JSON.stringify(task);
+      taskTableBody.appendChild(row);
+    });
+  }
+
+  window.showPopup = function (description) {
+    const existingPopup = document.querySelector(".popup-overlay");
+    if (existingPopup) existingPopup.remove();
+    const popup = document.createElement("div");
+    popup.classList.add("popup-overlay");
+    popup.innerHTML = `
+      <div class="popup">
+        <p style="word-wrap: break-word;">${description}</p>
+        <button class="close-popup">Close</button>
+      </div>
     `;
-    taskList.appendChild(li);
-  });
-}
-
-// ✅ Event delegation for task actions
-taskList.addEventListener("click", async (event) => {
-  const target = event.target;
-  const taskLi = target.closest("li");
-  if (!taskLi) return; // Clicked outside a task item
-
-  const taskId = taskLi.dataset.taskId;
-
-  if (target.classList.contains("delete-btn")) {
-    await deleteTask(taskId);
-  } else if (target.classList.contains("edit-btn")) {
-    enterEditMode(taskId);
-  }
-});
-
-// ✅ Add/Update task
-taskForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  const taskData = {
-    task: document.getElementById("task-name").value,
-    status: document.getElementById("task-status").value,
-    room: document.getElementById("task-room").value,
-    due_date: document.getElementById("task-due-date").value,
-    description: document.getElementById("task-desc").value,
+    document.body.appendChild(popup);
+    popup.addEventListener("click", (event) => {
+      if (event.target.classList.contains("popup-overlay") || event.target.classList.contains("close-popup")) {
+        popup.remove();
+      }
+    });
   };
 
-  try {
-    if (inEditMode) {
-      await fetch(`${API_URL}/tasks/${currentTaskId}`, {
-        method: "PATCH",
+  taskForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const taskData = {
+      task: document.getElementById("task-name").value.trim(),
+
+      status: document.getElementById("task-status").value.trim(),
+      room: document.getElementById("task-room").value.trim() || null,
+      due_date: document.getElementById("task-due-date").value || null,
+      description: document.getElementById("task-desc").value.trim() || null,
+    };
+    console.log("Submitting task data:", taskData);
+
+    try {
+      const method = inEditMode ? "PUT" : "POST";
+      const endpoint = inEditMode ? `${API_URL}/tasks/${currentTaskId}` : `${API_URL}/tasks`;
+      const response = await fetch(endpoint, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(taskData),
       });
+      if (!response.ok) throw new Error(`Failed to ${method === "PUT" ? "update" : "add"} task. Status: ${response.status}`);
+      const result = await response.json();
+      console.log("Server response:", result);
       inEditMode = false;
       submitButton.textContent = "Add Task";
-    } else {
-      await fetch(`${API_URL}/tasks`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(taskData),
-      });
+      taskForm.reset();
+      fetchTasks();
+    } catch (error) {
+      console.error("Error saving task:", error);
     }
+  });
 
-    fetchTasks();
-    taskForm.reset();
-  } catch (error) {
-    console.error("Error:", error);
-    // Implement user error display.
+  taskTableBody.addEventListener("click", async (event) => {
+    const target = event.target;
+    const taskId = target.dataset.id;
+
+    if (target.classList.contains("delete-btn")) {
+      await fetch(`${API_URL}/tasks/${taskId}`, { method: "DELETE" });
+      fetchTasks();
+    } else if (target.classList.contains("edit-btn")) {
+      enterEditMode(taskId);
+    }
+  });
+
+  function enterEditMode(id) {
+    inEditMode = true;
+    currentTaskId = id;
+    submitButton.textContent = "Update Task";
+
+    const row = document.querySelector(`button[data-id="${id}"]`).closest("tr");
+    const task = JSON.parse(row.dataset.task);
+    console.log("Editing task:", task);
+
+    document.getElementById("task-name").value = task.task || "";
+
+    document.getElementById("task-status").value = task.status || "";
+    document.getElementById("task-room").value = task.room || "";
+    document.getElementById("task-due-date").value = task.due_date ? new Date(task.due_date).toISOString().split("T")[0] : "";
+    document.getElementById("task-desc").value = task.description || "";
+
+    formContainer.style.display = "block";
+    toggleFormButton.textContent = "Hide Form";
   }
-});
 
-// ✅ Delete a task
-async function deleteTask(id) {
-  try {
-    const response = await fetch(`${API_URL}/tasks/${id}`, { method: "DELETE" });
-    if (!response.ok) throw new Error(`Failed to delete task`);
+  // Add event listeners for filter and sort controls
+  filterStatus.addEventListener("change", applyFilterAndSort);
+  sortBy.addEventListener("change", applyFilterAndSort);
+  filterText.addEventListener("input", applyFilterAndSort);
+  clearButton.addEventListener("click", () => {
+    filterStatus.value = "";
+    sortBy.value = "due_date";
+    filterText.value = "";
+    applyFilterAndSort();
+  });
 
-    document.querySelector(`li[data-task-id="${id}"]`).remove();
-  } catch (error) {
-    console.error("Error deleting task:", error);
-    //Implement user error display.
-  }
-}
-
-// ✅ Enter edit mode
-function enterEditMode(id) {
-  inEditMode = true;
-  currentTaskId = id;
-  submitButton.textContent = "Update Task";
-
-  const taskLi = document.querySelector(`li[data-task-id="${id}"]`);
-  document.getElementById("task-name").value = taskLi.querySelector("strong").textContent;
-  document.getElementById("task-status").value = taskLi.querySelector("p:nth-child(2)").textContent.replace("📂 Status: ", "");
-  document.getElementById("task-room").value = taskLi.querySelector("p:nth-child(3)").textContent.replace("📍 Room: ", "") === "N/A" ? "" : taskLi.querySelector("p:nth-child(3)").textContent.replace("📍 Room: ", "");
-  document.getElementById("task-due-date").value = taskLi.querySelector("p:nth-child(4)").textContent.replace("📅 Due: ", "") === "No due date" ? "" : taskLi.querySelector("p:nth-child(4)").textContent.replace("📅 Due: ", "");
-  document.getElementById("task-desc").value = taskLi.querySelector("p:nth-child(5)").textContent.replace("📝 ", "") === "No description" ? "" : taskLi.querySelector("p:nth-child(5)").textContent.replace("📝 ", "");
-}
-
-// ✅ Sort tasks by due date
-async function sortTasks() {
-  try {
-    const response = await fetch(`${API_URL}/tasks`);
-    if (!response.ok) throw new Error("HTTP error!");
-
-    let tasks = await response.json();
-    tasks.sort((a, b) => (a.due_date && b.due_date) ? new Date(a.due_date) - new Date(b.due_date) : (a.due_date ? -1 : 1));
-
-    renderTasks(tasks);
-  } catch (error) {
-    console.error("Error sorting tasks:", error);
-    //Implement user error display.
-  }
-}
-
-// ✅ Filter tasks by status
-filterSelect.addEventListener("change", (event) => {
-  fetchTasks(event.target.value);
-});
-
-// ✅ Load tasks on page load and add button listeners.
-function init() {
   fetchTasks();
-  sortDueDateButton.addEventListener("click", sortTasks);
-}
-
-window.addEventListener("DOMContentLoaded", init);
+});
