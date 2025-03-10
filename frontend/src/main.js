@@ -5,14 +5,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const submitButton = document.querySelector('#task-form button[type="submit"]');
   const toggleFormButton = document.querySelector("#toggle-form");
   const formContainer = document.querySelector("#form-container");
-  const filterStatus = document.querySelector("#filter-status");
-  const sortBy = document.querySelector("#sort-by");
   const filterText = document.querySelector("#filter-text");
+  const sortBy = document.querySelector("#sort-by");
   const clearButton = document.querySelector("#button-clear");
+  const showUncompletedBtn = document.querySelector("#show-uncompleted");
+  const showCompletedBtn = document.querySelector("#show-completed");
+  const showOnholdBtn = document.querySelector("#show-onhold");
 
   let inEditMode = false;
   let currentTaskId = null;
-  let allTasks = []; // Store all tasks for filtering/sorting
+  let allTasks = [];
+  let currentFilter = ""; // Track active filter
 
   formContainer.style.display = "block";
 
@@ -26,7 +29,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const response = await fetch(`${API_URL}/tasks`);
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       allTasks = await response.json();
-      console.log("Fetched tasks:", allTasks);
       applyFilterAndSort();
       return allTasks;
     } catch (error) {
@@ -37,10 +39,13 @@ document.addEventListener("DOMContentLoaded", () => {
   function applyFilterAndSort() {
     let filteredTasks = [...allTasks];
 
-    // Apply status filter
-    const statusValue = filterStatus.value;
-    if (statusValue) {
-      filteredTasks = filteredTasks.filter(task => task.status === statusValue);
+    // Apply status filter based on button
+    if (currentFilter === "uncompleted") {
+      filteredTasks = filteredTasks.filter(task => task.status === "Not Started" || task.status === "In-Progress");
+    } else if (currentFilter === "completed") {
+      filteredTasks = filteredTasks.filter(task => task.status === "Completed");
+    } else if (currentFilter === "onhold") {
+      filteredTasks = filteredTasks.filter(task => task.status === "On-Hold");
     }
 
     // Apply text filter
@@ -48,28 +53,32 @@ document.addEventListener("DOMContentLoaded", () => {
     if (searchText) {
       filteredTasks = filteredTasks.filter(task =>
         (task.task?.toLowerCase().includes(searchText) || '') ||
-
         (task.room?.toLowerCase().includes(searchText) || '') ||
         (task.description?.toLowerCase().includes(searchText) || '')
       );
     }
 
-    // Apply sorting
+    // Apply sorting (due_date first, then status)
     const sortValue = sortBy.value;
     filteredTasks.sort((a, b) => {
-      switch (sortValue) {
-        case "due_date":
-          return (new Date(a.due_date || "9999-12-31") - new Date(b.due_date || "9999-12-31"));
-
-        case "status":
-          return (a.status || "").localeCompare(b.status || "");
-
-        default:
-          return 0;
+      if (sortValue === "due_date") {
+        const dateA = new Date(a.due_date || "9999-12-31");
+        const dateB = new Date(b.due_date || "9999-12-31");
+        return dateA - dateB || statusOrder(a.status) - statusOrder(b.status);
+      } else if (sortValue === "status") {
+        return statusOrder(a.status) - statusOrder(b.status) ||
+          (new Date(a.due_date || "9999-12-31") - new Date(b.due_date || "9999-12-31"));
       }
+      return 0;
     });
 
     renderTasks(filteredTasks);
+  }
+
+  // Define status order for sorting
+  function statusOrder(status) {
+    const order = { "Not Started": 0, "In-Progress": 1, "On-Hold": 2, "Completed": 3 };
+    return order[status] ?? 4; // Unknown statuses go last
   }
 
   function renderTasks(tasks) {
@@ -86,7 +95,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       row.innerHTML = `
         <td>${task.task || ""}</td>
-
         <td>${task.status || ""}</td>
         <td>${task.room || ""}</td>
         <td>${task.due_date ? new Date(task.due_date).toDateString() : ""}</td>
@@ -126,13 +134,11 @@ document.addEventListener("DOMContentLoaded", () => {
     event.preventDefault();
     const taskData = {
       task: document.getElementById("task-name").value.trim(),
-
       status: document.getElementById("task-status").value.trim(),
       room: document.getElementById("task-room").value.trim() || null,
       due_date: document.getElementById("task-due-date").value || null,
       description: document.getElementById("task-desc").value.trim() || null,
     };
-    console.log("Submitting task data:", taskData);
 
     try {
       const method = inEditMode ? "PUT" : "POST";
@@ -143,8 +149,6 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify(taskData),
       });
       if (!response.ok) throw new Error(`Failed to ${method === "PUT" ? "update" : "add"} task. Status: ${response.status}`);
-      const result = await response.json();
-      console.log("Server response:", result);
       inEditMode = false;
       submitButton.textContent = "Add Task";
       taskForm.reset();
@@ -170,13 +174,10 @@ document.addEventListener("DOMContentLoaded", () => {
     inEditMode = true;
     currentTaskId = id;
     submitButton.textContent = "Update Task";
-
     const row = document.querySelector(`button[data-id="${id}"]`).closest("tr");
     const task = JSON.parse(row.dataset.task);
-    console.log("Editing task:", task);
 
     document.getElementById("task-name").value = task.task || "";
-
     document.getElementById("task-status").value = task.status || "";
     document.getElementById("task-room").value = task.room || "";
     document.getElementById("task-due-date").value = task.due_date ? new Date(task.due_date).toISOString().split("T")[0] : "";
@@ -186,13 +187,28 @@ document.addEventListener("DOMContentLoaded", () => {
     toggleFormButton.textContent = "Hide Form";
   }
 
-  // Add event listeners for filter and sort controls
-  filterStatus.addEventListener("change", applyFilterAndSort);
+  // Event listeners for filter buttons
+  showUncompletedBtn.addEventListener("click", () => {
+    currentFilter = "uncompleted";
+    applyFilterAndSort();
+  });
+
+  showCompletedBtn.addEventListener("click", () => {
+    currentFilter = "completed";
+    applyFilterAndSort();
+  });
+
+  showOnholdBtn.addEventListener("click", () => {
+    currentFilter = "onhold";
+    applyFilterAndSort();
+  });
+
+  // Event listeners for existing controls
   sortBy.addEventListener("change", applyFilterAndSort);
   filterText.addEventListener("input", applyFilterAndSort);
   clearButton.addEventListener("click", () => {
-    filterStatus.value = "";
-    sortBy.value = "due_date";
+    currentFilter = "";
+    sortBy.value = "due_date"; // Default sort
     filterText.value = "";
     applyFilterAndSort();
   });

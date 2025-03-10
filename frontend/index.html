@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WhiteDixon</title>
   <link rel="stylesheet" href="./src/style.css">
 </head>
@@ -35,23 +35,16 @@
       </form>
     </div>
     <div class="controls">
-      <label for="filter-status">Filter by Status</label>
-      <select id="filter-status">
-        <option value="">All</option>
-        <option value="Not Started">Not Started</option>
-        <option value="In-Progress">In-Progress</option>
-        <option value="Completed">Completed</option>
-        <option value="On-Hold">On-Hold</option>
-      </select>
+      <input type="text" id="filter-text" placeholder="Type something..." />
+      <button type="button" id="show-uncompleted">Show Uncompleted</button>
+      <button type="button" id="show-completed">Show Completed</button>
+      <button type="button" id="show-onhold">Show On-Hold</button>
       <label for="sort-by">Sort By</label>
       <select id="sort-by">
         <option value="due_date">Due Date</option>
-
         <option value="status">Status</option>
-
       </select>
-      <input type="text" id="filter-text" placeholder="Type something..." />
-      <button type="button" id="button-clear"> Clear </button>
+      <button type="button" id="button-clear">Clear</button>
     </div>
     <table>
       <thead>
